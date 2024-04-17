@@ -30,16 +30,16 @@ data "aws_vpc" "selected" {
 }
 
 # using the existing subnet to start the EC2 instance
-data "aws_subnet" "selected" {
-  id = "subnet-0c492c119d2652991"
-}
+# data "aws_subnet" "selected" {
+#   id = "subnet-0c492c119d2652991"
+# }
 
 resource "aws_eks_cluster" "eks_cluster" {
   name     = "eks_cluster_01"
   role_arn = aws_iam_role.ekscluster.arn
 
   vpc_config {
-    subnet_ids = [aws_subnet.selected.id]
+    subnet_ids = ["subnet-0c492c119d2652991"]
   }
   
   depends_on = [
