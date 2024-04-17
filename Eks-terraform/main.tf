@@ -39,7 +39,7 @@ resource "aws_eks_cluster" "eks_cluster" {
   role_arn = aws_iam_role.ekscluster.arn
 
   vpc_config {
-    subnet_ids = aws_subnet.selected.id
+    subnet_ids = [aws_subnet.selected.id]
   }
   
   depends_on = [
