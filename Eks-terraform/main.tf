@@ -25,8 +25,16 @@ resource "aws_iam_role_policy_attachment" "example-AmazonEKSClusterPolicy" {
 }
 
 # using existing vpc 
-data "aws_vpc" "selected" {
-  id = "vpc-047714d71a6ec55f4"
+#get vpc data
+data "aws_vpc" "default" {
+  default = true
+}
+#get public subnets for cluster
+data "aws_subnets" "public" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
 }
 
 # using the existing subnet to start the EC2 instance
@@ -39,7 +47,7 @@ resource "aws_eks_cluster" "eks_cluster" {
   role_arn = aws_iam_role.ekscluster.arn
 
   vpc_config {
-    subnet_ids = ["subnet-0c492c119d2652991"]
+    subnet_ids = data.aws_subnets.public.ids
   }
   
   depends_on = [
@@ -87,7 +95,7 @@ resource "aws_eks_node_group" "eks_node_group" {
   cluster_name    = aws_eks_cluster.eks_cluster.name
   node_group_name = "eks_node_group_01"
   node_role_arn   = aws_iam_role.eks_node.arn
-  subnet_ids      = ["subnet-0c492c119d2652991"]
+  subnet_ids      = data.aws_subnets.public.ids
 
   scaling_config {
     desired_size = 1
